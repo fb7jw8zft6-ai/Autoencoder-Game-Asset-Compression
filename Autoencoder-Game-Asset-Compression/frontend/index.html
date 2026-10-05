@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Game Asset Autoencoder</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+
+        /* ==============================
+           HEADER
+        ============================== */
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 35px;
+            text-align: center;
+        }
+
+
+        header h1 {
+            margin: 0;
+            font-size: 34px;
+        }
+
+
+        header p {
+            margin-top: 10px;
+            color: #d1d5db;
+            font-size: 17px;
+        }
+
+
+        /* ==============================
+           MAIN CONTAINER
+        ============================== */
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+
+        /* ==============================
+           CARDS
+        ============================== */
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+
+        .card h2 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+
+        .card h3 {
+            color: #1f2937;
+        }
+
+
+        /* ==============================
+           PROJECT INFORMATION
+        ============================== */
+
+        .info-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(280px, 1fr)
+                );
+
+            gap: 18px;
+
+            margin-top: 20px;
+        }
+
+
+        .info-box {
+            background: #f8fafc;
+
+            border-left:
+                5px solid #2563eb;
+
+            padding: 20px;
+
+            border-radius: 10px;
+        }
+
+
+        .info-box h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+
+        .info-box p {
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+
+        .info-box ul {
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+
+
+        /* ==============================
+           ARCHITECTURE
+        ============================== */
+
+        .architecture-container {
+            overflow-x: auto;
+            margin-top: 25px;
+        }
+
+
+        .architecture-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+
+        .architecture-table th,
+        .architecture-table td {
+            border: 1px solid #d1d5db;
+            padding: 14px;
+            text-align: center;
+        }
+
+
+        .architecture-table th {
+            background: #111827;
+            color: white;
+        }
+
+
+        .architecture-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+
+        .architecture-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+
+        .architecture-box {
+            width: 280px;
+            padding: 18px;
+            text-align: center;
+            background: #eef2ff;
+            border-radius: 10px;
+            border: 1px solid #c7d2fe;
+        }
+
+
+        .architecture-box strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+
+        .arrow {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+
+        /* ==============================
+           UPLOAD AREA
+        ============================== */
+
+        .upload-area {
+            text-align: center;
+
+            padding: 30px;
+
+            border:
+                2px dashed #9ca3af;
+
+            border-radius: 12px;
+        }
+
+
+        input[type="file"] {
+            margin: 20px 0;
+        }
+
+
+        /* ==============================
+           BUTTONS
+        ============================== */
+
+        button {
+            background: #2563eb;
+
+            color: white;
+
+            border: none;
+
+            padding: 13px 28px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            margin: 5px;
+        }
+
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+
+        /* ==============================
+           IMAGE RESULTS
+        ============================== */
+
+        .images {
+            display: flex;
+
+            gap: 30px;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+        }
+
+
+        .image-box {
+            text-align: center;
+
+            flex: 1;
+
+            min-width: 300px;
+        }
+
+
+        .image-box img {
+            width: 100%;
+
+            max-width: 400px;
+
+            height: 300px;
+
+            object-fit: contain;
+
+            border:
+                1px solid #d1d5db;
+
+            border-radius: 10px;
+
+            background: #f3f4f6;
+        }
+
+
+        /* ==============================
+           METRICS
+        ============================== */
+
+        .metrics {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(180px, 1fr)
+                );
+
+            gap: 15px;
+        }
+
+
+        .metric {
+            background: #f3f4f6;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            text-align: center;
+        }
+
+
+        .metric-title {
+            font-size: 14px;
+
+            color: #6b7280;
+        }
+
+
+        .metric-value {
+            display: block;
+
+            margin-top: 8px;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            color: #111827;
+        }
+
+
+        /* ==============================
+           RESULTS TABLE
+        ============================== */
+
+        .table-container {
+            overflow-x: auto;
+
+            margin-top: 20px;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            background: white;
+        }
+
+
+        th,
+        td {
+            border: 1px solid #d1d5db;
+
+            padding: 14px;
+
+            text-align: center;
+        }
+
+
+        th {
+            background: #111827;
+
+            color: white;
+        }
+
+
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+
+        /* ==============================
+           ANALYSIS BOX
+        ============================== */
+
+        .analysis-box {
+            background: #f8fafc;
+
+            border-left:
+                5px solid #2563eb;
+
+            padding: 20px;
+
+            margin-top: 20px;
+
+            border-radius: 10px;
+        }
+
+
+        .analysis-box p {
+            line-height: 1.7;
+        }
+
+
+        /* ==============================
+           WORKFLOW
+        ============================== */
+
+        .workflow {
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+            margin: 25px 0;
+        }
+
+
+        .workflow-box {
+            padding: 15px;
+
+            background: #eef2ff;
+
+            border-radius: 10px;
+
+            text-align: center;
+
+            min-width: 140px;
+        }
+
+
+        /* ==============================
+           EXPLANATION
+        ============================== */
+
+        .explanation {
+            line-height: 1.7;
+        }
+
+
+        /* ==============================
+           STATUS
+        ============================== */
+
+        #status {
+            text-align: center;
+
+            margin-top: 15px;
+
+            font-weight: bold;
+        }
+
+
+        /* ==============================
+           FOOTER
+        ============================== */
+
+        footer {
+            text-align: center;
+
+            padding: 25px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     HEADER
+================================================== -->
+
+<header>
+
+    <h1>
+        🎮 Game Asset Autoencoder
+    </h1>
+
+    <p>
+        Deep Learning Based Image Compression
+        and Reconstruction
+    </p>
+
+</header>
+
+
+
+<div class="container">
+
+
+    <!-- ==================================================
+         PROJECT INFORMATION
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            📘 Project Information
+        </h2>
+
+
+        <p class="explanation">
+
+            This project demonstrates an autoencoder-based
+            approach for compressing and reconstructing
+            virtual game asset images while attempting to
+            preserve their visual information.
+
+        </p>
+
+
+        <div class="info-grid">
+
+
+            <div class="info-box">
+
+                <h3>
+                    🎯 Project Objective
+                </h3>
+
+                <p>
+
+                    To create an autoencoder that reduces
+                    the representation size of virtual
+                    in-game assets while reconstructing
+                    the visual content.
+
+                </p>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <h3>
+                    📁 Dataset
+                </h3>
+
+                <p>
+
+                    The project uses a synthetic game-asset
+                    image dataset containing four categories:
+
+                </p>
+
+                <ul>
+
+                    <li>Character</li>
+                    <li>Vehicle</li>
+                    <li>Weapon</li>
+                    <li>Environment</li>
+
+                </ul>
+
+                <p>
+
+                    Total images:
+                    <strong>600</strong>
+
+                </p>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <h3>
+                    🧹 Preprocessing
+                </h3>
+
+                <ul>
+
+                    <li>
+                        Images converted to RGB.
+                    </li>
+
+                    <li>
+                        Images resized to 64 × 64 pixels.
+                    </li>
+
+                    <li>
+                        Images converted to tensors.
+                    </li>
+
+                    <li>
+                        80% training and 20% testing split.
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <h3>
+                    ⚙️ Training Configuration
+                </h3>
+
+                <ul>
+
+                    <li>
+                        Framework: PyTorch
+                    </li>
+
+                    <li>
+                        Optimizer: Adam
+                    </li>
+
+                    <li>
+                        Learning rate: 0.001
+                    </li>
+
+                    <li>
+                        Loss function: MSE
+                    </li>
+
+                    <li>
+                        Batch size: 32
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         MODEL ARCHITECTURE
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            🧠 Model Architecture
+        </h2>
+
+
+        <p class="explanation">
+
+            The project uses a convolutional autoencoder.
+            The encoder progressively reduces the spatial
+            dimensions of the input image and produces a
+            latent representation. The decoder then
+            reconstructs the image from this representation.
+
+        </p>
+
+
+        <!-- ARCHITECTURE FLOW -->
+
+        <h3>
+            Architecture Flow
+        </h3>
+
+
+        <div class="architecture-flow">
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Input Image
+                </strong>
+
+                3 × 64 × 64
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Encoder Layer 1
+                </strong>
+
+                Conv2D + ReLU
+
+                <br>
+
+                32 × 32 × 32
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Encoder Layer 2
+                </strong>
+
+                Conv2D + ReLU
+
+                <br>
+
+                64 × 16 × 16
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Encoder Layer 3
+                </strong>
+
+                Conv2D + ReLU
+
+                <br>
+
+                128 × 8 × 8
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Latent Representation
+                </strong>
+
+                128 × 8 × 8
+
+                <br>
+
+                8,192 values
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Decoder Layer 1
+                </strong>
+
+                ConvTranspose2D + ReLU
+
+                <br>
+
+                64 × 16 × 16
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Decoder Layer 2
+                </strong>
+
+                ConvTranspose2D + ReLU
+
+                <br>
+
+                32 × 32 × 32
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Decoder Layer 3
+                </strong>
+
+                ConvTranspose2D + Sigmoid
+
+                <br>
+
+                3 × 64 × 64
+
+            </div>
+
+
+            <div class="arrow">
+                ↓
+            </div>
+
+
+            <div class="architecture-box">
+
+                <strong>
+                    Reconstructed Image
+                </strong>
+
+                64 × 64 RGB
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ARCHITECTURE TABLE -->
+
+        <h3>
+            Layer Details
+        </h3>
+
+
+        <div class="architecture-container">
+
+            <table class="architecture-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Layer
+                        </th>
+
+                        <th>
+                            Operation
+                        </th>
+
+                        <th>
+                            Output Shape
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+
+                        <td>
+                            Input
+                        </td>
+
+                        <td>
+                            RGB Image
+                        </td>
+
+                        <td>
+                            3 × 64 × 64
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Encoder 1
+                        </td>
+
+                        <td>
+                            Conv2D + ReLU
+                        </td>
+
+                        <td>
+                            32 × 32 × 32
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Encoder 2
+                        </td>
+
+                        <td>
+                            Conv2D + ReLU
+                        </td>
+
+                        <td>
+                            64 × 16 × 16
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Encoder 3
+                        </td>
+
+                        <td>
+                            Conv2D + ReLU
+                        </td>
+
+                        <td>
+                            128 × 8 × 8
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Latent Space
+                        </td>
+
+                        <td>
+                            Compressed Representation
+                        </td>
+
+                        <td>
+                            128 × 8 × 8
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Decoder 1
+                        </td>
+
+                        <td>
+                            ConvTranspose2D + ReLU
+                        </td>
+
+                        <td>
+                            64 × 16 × 16
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Decoder 2
+                        </td>
+
+                        <td>
+                            ConvTranspose2D + ReLU
+                        </td>
+
+                        <td>
+                            32 × 32 × 32
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Decoder 3
+                        </td>
+
+                        <td>
+                            ConvTranspose2D + Sigmoid
+                        </td>
+
+                        <td>
+                            3 × 64 × 64
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Output
+                        </td>
+
+                        <td>
+                            Reconstructed Image
+                        </td>
+
+                        <td>
+                            3 × 64 × 64
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="analysis-box">
+
+            <h3>
+                💡 Architecture Explanation
+            </h3>
+
+
+            <p>
+
+                The encoder contains three convolutional
+                layers. Each layer uses a stride of 2,
+                which reduces the spatial dimensions of
+                the feature maps.
+
+            </p>
+
+
+            <p>
+
+                The final encoder output has the shape
+                <strong>128 × 8 × 8</strong>. This is the
+                latent representation used by the decoder.
+
+            </p>
+
+
+            <p>
+
+                The decoder uses three transposed
+                convolution layers to progressively
+                increase the spatial dimensions back to
+                <strong>64 × 64</strong>.
+
+            </p>
+
+
+            <p>
+
+                The final decoder layer uses a
+                <strong>Sigmoid</strong> activation so that
+                the reconstructed pixel values remain in
+                the 0–1 range.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         RESULTS & ANALYSIS
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            📈 Results & Analysis
+        </h2>
+
+
+        <p class="explanation">
+
+            The following results summarize the current
+            trained autoencoder experiment.
+
+        </p>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Parameter
+                        </th>
+
+                        <th>
+                            Result
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+                        <td>Total Dataset Images</td>
+                        <td>600</td>
+                    </tr>
+
+                    <tr>
+                        <td>Training Images</td>
+                        <td>480</td>
+                    </tr>
+
+                    <tr>
+                        <td>Testing Images</td>
+                        <td>120</td>
+                    </tr>
+
+                    <tr>
+                        <td>Input Resolution</td>
+                        <td>64 × 64 × 3</td>
+                    </tr>
+
+                    <tr>
+                        <td>Latent Representation</td>
+                        <td>128 × 8 × 8</td>
+                    </tr>
+
+                    <tr>
+                        <td>Latent Values</td>
+                        <td>8,192</td>
+                    </tr>
+
+                    <tr>
+                        <td>Quantized Latent Size</td>
+                        <td>8,192 bytes</td>
+                    </tr>
+
+                    <tr>
+                        <td>Raw Input Representation</td>
+                        <td>12,288 bytes</td>
+                    </tr>
+
+                    <tr>
+                        <td>Raw Latent Representation Ratio</td>
+                        <td>1.50 ×</td>
+                    </tr>
+
+                    <tr>
+                        <td>Example Quantized MSE</td>
+                        <td>≈ 0.005649</td>
+                    </tr>
+
+                    <tr>
+                        <td>Example Quantized PSNR</td>
+                        <td>≈ 22.48 dB</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="analysis-box">
+
+            <h3>
+                🔎 Result Analysis
+            </h3>
+
+
+            <p>
+
+                The trained autoencoder successfully learns
+                to encode 64 × 64 RGB game asset images into
+                a latent representation and reconstruct the
+                images using the decoder.
+
+            </p>
+
+
+            <p>
+
+                The quantized latent representation contains
+                8,192 8-bit values compared with 12,288 values
+                in the raw 64 × 64 RGB representation. This
+                gives a raw representation ratio of
+                approximately <strong>1.50 ×</strong>.
+
+            </p>
+
+
+            <p>
+
+                The example quantized reconstruction produced
+                an MSE of approximately <strong>0.005649</strong>
+                and a PSNR of approximately
+                <strong>22.48 dB</strong>.
+
+            </p>
+
+
+            <p>
+
+                Some visual blur can be observed in the
+                reconstructed images. This is a current
+                limitation of the trained model and dataset.
+
+            </p>
+
+
+            <p>
+
+                The 1.50 × value represents a
+                <strong>raw latent representation ratio</strong>
+                rather than a final compressed-file ratio,
+                because actual file storage would also involve
+                metadata and other storage overhead.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         UPLOAD SECTION
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            📤 Upload Game Asset
+        </h2>
+
+
+        <div class="upload-area">
+
+            <p>
+
+                Select a character, vehicle,
+                weapon or environment image.
+
+            </p>
+
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+            >
+
+
+            <br>
+
+
+            <button
+                onclick="reconstructImage()"
+            >
+
+                Compress & Reconstruct
+
+            </button>
+
+
+            <p id="status"></p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         RECONSTRUCTION RESULTS
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            🖼️ Reconstruction Results
+        </h2>
+
+
+        <div class="images">
+
+
+            <div class="image-box">
+
+                <h3>
+                    Original Image
+                </h3>
+
+
+                <img
+                    id="originalImage"
+                    src=""
+                    alt="Original Image"
+                >
+
+            </div>
+
+
+
+            <div class="image-box">
+
+                <h3>
+                    Reconstructed Image
+                </h3>
+
+
+                <img
+                    id="reconstructedImage"
+                    src=""
+                    alt="Reconstructed Image"
+                >
+
+
+                <br>
+
+
+                <button
+                    id="downloadButton"
+                    onclick="downloadReconstructedImage()"
+                    disabled
+                >
+
+                    Download Reconstructed Image
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         LIVE METRICS
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            📊 Live Compression & Evaluation
+        </h2>
+
+
+        <div class="metrics">
+
+
+            <div class="metric">
+
+                <span class="metric-title">
+                    Original Size
+                </span>
+
+
+                <span
+                    class="metric-value"
+                    id="originalSize"
+                >
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span class="metric-title">
+                    Latent Size
+                </span>
+
+
+                <span
+                    class="metric-value"
+                    id="latentSize"
+                >
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span class="metric-title">
+                    Compression Ratio
+                </span>
+
+
+                <span
+                    class="metric-value"
+                    id="compressionRatio"
+                >
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span class="metric-title">
+                    MSE
+                </span>
+
+
+                <span
+                    class="metric-value"
+                    id="mse"
+                >
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span class="metric-title">
+                    PSNR
+                </span>
+
+
+                <span
+                    class="metric-value"
+                    id="psnr"
+                >
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="metric">
+
+                <span class="metric-title">
+                    Latent Representation
+                </span>
+
+
+                <span
+                    class="metric-value"
+                    id="latentShape"
+                >
+
+                    -
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         HOW AUTOENCODER WORKS
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            🔄 How the Autoencoder Works
+        </h2>
+
+
+        <p class="explanation">
+
+            The encoder converts the input image into a
+            compact latent representation. The decoder then
+            uses this representation to reconstruct the image.
+
+        </p>
+
+
+        <div class="workflow">
+
+
+            <div class="workflow-box">
+
+                <strong>
+                    Input Image
+                </strong>
+
+                <br>
+
+                64 × 64 RGB
+
+            </div>
+
+
+            <strong>→</strong>
+
+
+            <div class="workflow-box">
+
+                <strong>
+                    Encoder
+                </strong>
+
+                <br>
+
+                Compresses Image
+
+            </div>
+
+
+            <strong>→</strong>
+
+
+            <div class="workflow-box">
+
+                <strong>
+                    Latent Space
+                </strong>
+
+                <br>
+
+                128 × 8 × 8
+
+            </div>
+
+
+            <strong>→</strong>
+
+
+            <div class="workflow-box">
+
+                <strong>
+                    Decoder
+                </strong>
+
+                <br>
+
+                Reconstructs Image
+
+            </div>
+
+
+            <strong>→</strong>
+
+
+            <div class="workflow-box">
+
+                <strong>
+                    Output
+                </strong>
+
+                <br>
+
+                Reconstructed Image
+
+            </div>
+
+
+        </div>
+
+
+        <h3>
+            Evaluation Metrics
+        </h3>
+
+
+        <p class="explanation">
+
+            <strong>MSE:</strong>
+
+            Measures the reconstruction error between
+            the original and reconstructed images.
+
+        </p>
+
+
+        <p class="explanation">
+
+            <strong>PSNR:</strong>
+
+            Measures reconstruction quality.
+            Higher PSNR generally indicates lower
+            reconstruction error.
+
+        </p>
+
+
+        <p class="explanation">
+
+            <strong>Compression Ratio:</strong>
+
+            Compares the raw RGB representation with
+            the quantized latent representation.
+
+        </p>
+
+    </div>
+
+
+
+</div>
+
+
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
+
+<footer>
+
+    Semester 3 Deep Learning Project |
+    Autoencoder Compression for Game Assets
+
+</footer>
+
+
+
+<script>
+
+
+    // ============================================
+    // RECONSTRUCT IMAGE
+    // ============================================
+
+    async function reconstructImage() {
+
+
+        const fileInput =
+            document.getElementById(
+                "imageInput"
+            );
+
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+
+        if (
+            fileInput.files.length === 0
+        ) {
+
+            status.textContent =
+                "Please select an image first.";
+
+            return;
+
+        }
+
+
+        const file =
+            fileInput.files[0];
+
+
+        const originalURL =
+            URL.createObjectURL(
+                file
+            );
+
+
+        document.getElementById(
+            "originalImage"
+        ).src =
+            originalURL;
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "image",
+            file
+        );
+
+
+        status.textContent =
+            "Processing image...";
+
+
+        try {
+
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:5000/reconstruct",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Something went wrong."
+                );
+
+            }
+
+
+            document.getElementById(
+                "reconstructedImage"
+            ).src =
+                data.reconstructed_image;
+
+
+            document.getElementById(
+                "downloadButton"
+            ).disabled = false;
+
+
+            document.getElementById(
+                "originalSize"
+            ).textContent =
+                data.original_size_bytes
+                + " bytes";
+
+
+            document.getElementById(
+                "latentSize"
+            ).textContent =
+                data.latent_size_bytes
+                + " bytes";
+
+
+            document.getElementById(
+                "compressionRatio"
+            ).textContent =
+                data.compression_ratio
+                + " ×";
+
+
+            document.getElementById(
+                "mse"
+            ).textContent =
+                data.mse;
+
+
+            document.getElementById(
+                "psnr"
+            ).textContent =
+                data.psnr
+                + " dB";
+
+
+            document.getElementById(
+                "latentShape"
+            ).textContent =
+                data.latent_shape
+                .slice(1)
+                .join(" × ");
+
+
+            status.textContent =
+                "Image reconstructed successfully!";
+
+
+        }
+
+        catch (error) {
+
+
+            console.error(
+                error
+            );
+
+
+            status.textContent =
+                "Error: "
+                + error.message;
+
+        }
+
+    }
+
+
+
+    // ============================================
+    // DOWNLOAD RECONSTRUCTED IMAGE
+    // ============================================
+
+    function downloadReconstructedImage() {
+
+
+        const image =
+            document.getElementById(
+                "reconstructedImage"
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            image.src;
+
+
+        link.download =
+            "reconstructed_game_asset.png";
+
+
+        link.click();
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>
